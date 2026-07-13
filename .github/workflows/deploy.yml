@@ -41,17 +41,23 @@ jobs:
           const fs = require('fs');
           const mainPath = 'src/main.jsx';
           let main = fs.readFileSync(mainPath, 'utf8');
-          const marker02 = '    no: "02",';
-          const split02 = main.split(marker02);
-          if (split02.length === 2) {
-            split02[0] = split02[0].replace('video: asset("motion/material-pulse.mp4"),\n    poster: asset("motion/material-pulse.jpg")', 'video: asset("motion/light-matrix.mp4"),\n    poster: asset("motion/light-matrix.jpg")');
-            main = split02.join(marker02);
-          }
-          const marker03 = '    no: "03",';
-          const split03 = main.split(marker03);
-          if (split03.length === 2) {
-            split03[1] = split03[1].replace('video: asset("motion/light-matrix.mp4"),\n    poster: asset("motion/light-matrix.jpg")', 'video: asset("motion/material-pulse.mp4"),\n    poster: asset("motion/material-pulse.jpg")');
-            main = split03.join(marker03);
+          const start = main.indexOf('const motionFilms = [');
+          const end = main.indexOf('];', start);
+          if (start !== -1 && end !== -1) {
+            let block = main.slice(start, end);
+            const replaceFilmMedia = (source, no, video, poster) => {
+              const filmStart = source.indexOf(`no: "${no}"`);
+              if (filmStart === -1) return source;
+              const nextFilm = source.indexOf(`no: "${String(Number(no) + 1).padStart(2, '0')}"`, filmStart + 1);
+              const filmEnd = nextFilm === -1 ? source.length : nextFilm;
+              const before = source.slice(0, filmStart);
+              const film = source.slice(filmStart, filmEnd).replace(/video: asset\("motion\/[^\"]+\.mp4"\),\n\s*poster: asset\("motion\/[^\"]+\.jpg"\),/, `video: asset("${video}"),\n    poster: asset("${poster}"),`);
+              const after = source.slice(filmEnd);
+              return before + film + after;
+            };
+            block = replaceFilmMedia(block, '01', 'motion/light-matrix.mp4', 'motion/light-matrix.jpg');
+            block = replaceFilmMedia(block, '03', 'motion/material-pulse.mp4', 'motion/material-pulse.jpg');
+            main = main.slice(0, start) + block + main.slice(end);
           }
           fs.writeFileSync(mainPath, main);
 
