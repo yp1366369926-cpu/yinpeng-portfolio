@@ -1,0 +1,9 @@
+node_modules
+public/legacy
+public-legacy
+dist
+.DS_Store
+
+.home
+.checkpoint-home
+.wrangler

@@ -1,0 +1,28 @@
+{
+  "name": "yin-peng-portfolio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "rm -rf public/legacy public-legacy && GITHUB_PAGES=1 vite --config vite.legacy.config.js build && cp dist/index.html dist/404.html",
+    "build:cloudflare": "rm -rf public/legacy public-legacy && mkdir -p public-legacy && cp -R public/assets public-legacy/assets && vite --config vite.legacy.config.js build && rm -rf public-legacy && vinext build && node scripts/dedupe-client-public-assets.mjs && mkdir -p dist/.openai && cp .openai/hosting.json dist/.openai/hosting.json",
+    "optimize:assets": "node scripts/optimize-assets.mjs",
+    "preview": "vinext dev"
+  },
+  "dependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@vitejs/plugin-react": "^6.0.2",
+    "next": "16.2.6",
+    "ogl": "^1.0.11",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "vinext": "0.0.50",
+    "vite": "^8.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-rsc": "0.5.26",
+    "react-server-dom-webpack": "19.2.6",
+    "sharp": "^0.35.3"
+  }
+}
