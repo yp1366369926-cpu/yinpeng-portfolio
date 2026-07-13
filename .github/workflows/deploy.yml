@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -66,6 +66,16 @@ jobs:
           styles = styles.replace('.hmi-case-page { --case-accent: #ff7954; }', '.hmi-case-page {\n  --case-accent: #ff7954;\n  overflow: visible;\n}\n.hmi-case-page [data-reveal] {\n  opacity: 1;\n  translate: 0 0;\n  filter: blur(0);\n}');
           fs.writeFileSync(stylesPath, styles);
           NODE
+
+      - name: Persist source fixes
+        run: |
+          if ! git diff --quiet -- src/main.jsx src/styles.css; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/main.jsx src/styles.css
+            git commit -m "Fix HMI detail visibility and motion video order"
+            git push
+          fi
 
       - name: Build site
         run: pnpm build
