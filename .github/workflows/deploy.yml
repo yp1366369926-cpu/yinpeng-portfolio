@@ -39,57 +39,25 @@ jobs:
         run: |
           node <<'NODE'
           const fs = require('fs');
-
           const mainPath = 'src/main.jsx';
           let main = fs.readFileSync(mainPath, 'utf8');
-
-          const film01Before = `    no: "01",
-    title: "Material Pulse",
-    zh: "材质脉冲",
-    category: "PRODUCT MATERIAL · MACRO MOTION",
-    description: "以微距镜头放大鞋履材质、结构与光泽，让产品细节成为动态叙事的主角。",
-    video: asset("motion/material-pulse.mp4"),
-    poster: asset("motion/material-pulse.jpg"),`;
-          const film01After = `    no: "01",
-    title: "Material Pulse",
-    zh: "材质脉冲",
-    category: "PRODUCT MATERIAL · MACRO MOTION",
-    description: "以微距镜头放大鞋履材质、结构与光泽，让产品细节成为动态叙事的主角。",
-    video: asset("motion/light-matrix.mp4"),
-    poster: asset("motion/light-matrix.jpg"),`;
-
-          const film03Before = `    no: "03",
-    title: "Light Matrix",
-    zh: "光栅矩阵",
-    category: "PARTICLE SYSTEM · BRAND MOTION",
-    description: "让粒子、光栅与几何文字在秩序和失序之间呼吸，形成品牌能量的动态标记。",
-    video: asset("motion/light-matrix.mp4"),
-    poster: asset("motion/light-matrix.jpg"),`;
-          const film03After = `    no: "03",
-    title: "Light Matrix",
-    zh: "光栅矩阵",
-    category: "PARTICLE SYSTEM · BRAND MOTION",
-    description: "让粒子、光栅与几何文字在秩序和失序之间呼吸，形成品牌能量的动态标记。",
-    video: asset("motion/material-pulse.mp4"),
-    poster: asset("motion/material-pulse.jpg"),`;
-
-          main = main.replace(film01Before, film01After).replace(film03Before, film03After);
+          const marker02 = '    no: "02",';
+          const split02 = main.split(marker02);
+          if (split02.length === 2) {
+            split02[0] = split02[0].replace('video: asset("motion/material-pulse.mp4"),\n    poster: asset("motion/material-pulse.jpg")', 'video: asset("motion/light-matrix.mp4"),\n    poster: asset("motion/light-matrix.jpg")');
+            main = split02.join(marker02);
+          }
+          const marker03 = '    no: "03",';
+          const split03 = main.split(marker03);
+          if (split03.length === 2) {
+            split03[1] = split03[1].replace('video: asset("motion/light-matrix.mp4"),\n    poster: asset("motion/light-matrix.jpg")', 'video: asset("motion/material-pulse.mp4"),\n    poster: asset("motion/material-pulse.jpg")');
+            main = split03.join(marker03);
+          }
           fs.writeFileSync(mainPath, main);
 
           const stylesPath = 'src/styles.css';
           let styles = fs.readFileSync(stylesPath, 'utf8');
-          styles = styles.replace(
-            '.hmi-case-page { --case-accent: #ff7954; }',
-            `.hmi-case-page {
-  --case-accent: #ff7954;
-  overflow: visible;
-}
-.hmi-case-page [data-reveal] {
-  opacity: 1;
-  translate: 0 0;
-  filter: blur(0);
-}`
-          );
+          styles = styles.replace('.hmi-case-page { --case-accent: #ff7954; }', '.hmi-case-page {\n  --case-accent: #ff7954;\n  overflow: visible;\n}\n.hmi-case-page [data-reveal] {\n  opacity: 1;\n  translate: 0 0;\n  filter: blur(0);\n}');
           fs.writeFileSync(stylesPath, styles);
           NODE
 
