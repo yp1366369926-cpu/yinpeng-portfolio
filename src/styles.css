@@ -2052,7 +2052,15 @@ body.modal-open {
   background: radial-gradient(circle at 84% 5%, color-mix(in srgb, var(--case-accent) 22%, transparent), transparent 27%), linear-gradient(155deg, #080707 0%, #170b08 48%, #070808 100%);
 }
 .zhuzhu-case-page { --case-accent: #c9df58; }
-.hmi-case-page { --case-accent: #ff7954; }
+.hmi-case-page {
+  --case-accent: #ff7954;
+  overflow: visible;
+}
+.hmi-case-page [data-reveal] {
+  opacity: 1;
+  translate: 0 0;
+  filter: blur(0);
+}
 .visual-case-header span { color: var(--case-accent); }
 .visual-case-hero { min-height: min(920px, 100vh); position: relative; display: grid; grid-template-columns: .8fr 1.2fr; align-items: center; gap: 40px; overflow: hidden; isolation: isolate; }
 .visual-case-hero::before { content: ""; position: absolute; z-index: -1; width: 72vw; height: 72vw; right: -24vw; top: -24vw; border: 1px solid color-mix(in srgb, var(--case-accent) 34%, transparent); border-radius: 50%; box-shadow: 0 0 180px color-mix(in srgb, var(--case-accent) 16%, transparent), inset 0 0 120px color-mix(in srgb, var(--case-accent) 10%, transparent); }
