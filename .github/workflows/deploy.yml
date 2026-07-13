@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -34,48 +34,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Apply requested portfolio fixes
-        run: |
-          node <<'NODE'
-          const fs = require('fs');
-          const mainPath = 'src/main.jsx';
-          let main = fs.readFileSync(mainPath, 'utf8');
-          const start = main.indexOf('const motionFilms = [');
-          const end = main.indexOf('];', start);
-          if (start !== -1 && end !== -1) {
-            let block = main.slice(start, end);
-            const replaceFilmMedia = (source, no, video, poster) => {
-              const filmStart = source.indexOf(`no: "${no}"`);
-              if (filmStart === -1) return source;
-              const nextFilm = source.indexOf(`no: "${String(Number(no) + 1).padStart(2, '0')}"`, filmStart + 1);
-              const filmEnd = nextFilm === -1 ? source.length : nextFilm;
-              const before = source.slice(0, filmStart);
-              const film = source.slice(filmStart, filmEnd).replace(/video: asset\("motion\/[^\"]+\.mp4"\),\n\s*poster: asset\("motion\/[^\"]+\.jpg"\),/, `video: asset("${video}"),\n    poster: asset("${poster}"),`);
-              const after = source.slice(filmEnd);
-              return before + film + after;
-            };
-            block = replaceFilmMedia(block, '01', 'motion/light-matrix.mp4', 'motion/light-matrix.jpg');
-            block = replaceFilmMedia(block, '03', 'motion/material-pulse.mp4', 'motion/material-pulse.jpg');
-            main = main.slice(0, start) + block + main.slice(end);
-          }
-          fs.writeFileSync(mainPath, main);
-
-          const stylesPath = 'src/styles.css';
-          let styles = fs.readFileSync(stylesPath, 'utf8');
-          styles = styles.replace('.hmi-case-page { --case-accent: #ff7954; }', '.hmi-case-page {\n  --case-accent: #ff7954;\n  overflow: visible;\n}\n.hmi-case-page [data-reveal] {\n  opacity: 1;\n  translate: 0 0;\n  filter: blur(0);\n}');
-          fs.writeFileSync(stylesPath, styles);
-          NODE
-
-      - name: Persist source fixes
-        run: |
-          if ! git diff --quiet -- src/main.jsx src/styles.css; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src/main.jsx src/styles.css
-            git commit -m "Fix HMI detail visibility and motion video order"
-            git push
-          fi
 
       - name: Build site
         run: pnpm build
