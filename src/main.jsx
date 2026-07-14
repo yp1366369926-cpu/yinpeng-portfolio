@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import Magnet from "./components/Magnet";
 import "./styles.css";
 
 const LazyGrainient = lazy(() => import("./Grainient"));
@@ -51,10 +52,12 @@ const projects = [
 const strengths = [
   {
     index: "A",
-    title: "全链路产品设计",
-    en: "END-TO-END PRODUCT",
-    text: "从需求分析、原型到视觉交互与上线验收，完整把控设计质量。",
+    title: "Web3.0体验设计",
+    en: "WEB3.0 EXPERIENCE DESIGN",
+    text: "面向链上增长、资产发行与社区激励网络，构建更具科技感的官网体验。",
     icon: "↗",
+    route: "https://yp1366369926-cpu.github.io/web3.0/",
+    image: asset("projects/web3/cover.png"),
   },
   {
     index: "B",
@@ -569,6 +572,19 @@ function Hero() {
         </h1>
       </div>
 
+      <Magnet
+        padding={70}
+        magnetStrength={18}
+        wrapperClassName="hero-resume-magnet hero-anim hero-fade"
+        innerClassName="hero-resume-magnet__inner"
+        style={{ animationDelay: "0.62s" }}
+      >
+        <a className="hero-resume-button" href={asset("yin-peng-resume.pdf")} download>
+          <span>View / Download Resume</span>
+          <i aria-hidden="true">↓</i>
+        </a>
+      </Magnet>
+
       <div className="hero-bottom-left hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
         <p>
           我把复杂业务拆解成清晰的体验路径，从需求定义、交互设计到视觉落地，让产品更易用、更可信，也更具转化力。
@@ -779,24 +795,34 @@ function Strengths() {
         <p>DESIGN IS NOT A LAYER.<br />IT IS HOW THINGS WORK.</p>
       </div>
       <div className="strength-grid">
-        {strengths.map((item) => (
-          <article className="glow-frame strength-frame" key={item.index} data-reveal {...getTiltProps()}>
-            <a className={`strength-card ${item.image ? "strength-card--project" : ""} ${item.index === "F" ? "strength-card--motion" : ""}`} href={item.route || (item.index === "F" ? "#motion" : undefined)}>
-              {item.image && <img src={item.image} alt={`${item.title}项目封面`} loading="lazy" decoding="async" />}
-              {item.index === "F" && !item.image && <img src={asset("motion/light-matrix.jpg")} alt="动态视觉表达视频封面" loading="lazy" decoding="async" />}
-              <div className="strength-top">
-                <span>{item.index}</span>
-                <i>{item.icon}</i>
-              </div>
-              <div>
-                <p>{item.en}</p>
-                <h3>{item.title}</h3>
-                <span>{item.text}</span>
-              </div>
-              {(item.index === "F" || item.image) && <b className="strength-motion-cta">VIEW PROJECT ↗</b>}
-            </a>
-          </article>
-        ))}
+        {strengths.map((item) => {
+          const href = item.route || (item.index === "F" ? "#motion" : undefined);
+          const isExternal = Boolean(href?.startsWith("http"));
+
+          return (
+            <article className="glow-frame strength-frame" key={item.index} data-reveal {...getTiltProps()}>
+              <a
+                className={`strength-card ${item.image ? "strength-card--project" : ""} ${item.index === "A" ? "strength-card--web3" : ""} ${item.index === "F" ? "strength-card--motion" : ""}`}
+                href={href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noreferrer" : undefined}
+              >
+                {item.image && <img src={item.image} alt={`${item.title}项目封面`} loading="lazy" decoding="async" />}
+                {item.index === "F" && !item.image && <img src={asset("motion/light-matrix.jpg")} alt="动态视觉表达视频封面" loading="lazy" decoding="async" />}
+                <div className="strength-top">
+                  <span>{item.index}</span>
+                  <i>{item.icon}</i>
+                </div>
+                <div>
+                  <p>{item.en}</p>
+                  <h3>{item.title}</h3>
+                  <span>{item.text}</span>
+                </div>
+                {(item.index === "F" || item.image) && <b className="strength-motion-cta">VIEW PROJECT ↗</b>}
+              </a>
+            </article>
+          );
+        })}
       </div>
       <div className="tool-line">
         <span>TOOLS</span>
